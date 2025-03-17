@@ -46,10 +46,26 @@ public class CafeKiosk {
 //        return totalPrice;
 //    }
 
-    // 1차 tdd
+    // NOTE : TDD
+    // NOTE : RED
+    // public int calculateTotalPrice() {
+    //     return 0;
+    // }
+
+    // NOTE : GREEN
+    // public int calculateTotalPrice() {
+    //     int totalPrice = 0;
+    //     for (Beverage beverage : beverages) {
+    //         totalPrice += beverage.getPrice();
+    //     }
+    //     return totalPrice;
+    // }
+
+    // NOTE : REFACTOR
     public int calculateTotalPrice() {
-        return 0;
+        return beverages.stream().mapToInt(Beverage::getPrice).sum();
     }
+
 
     public Order createOrder() {
         LocalTime currentTime = LocalDateTime.now().toLocalTime();
