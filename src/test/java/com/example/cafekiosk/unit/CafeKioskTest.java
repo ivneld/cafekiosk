@@ -8,6 +8,7 @@ import com.example.cafekiosk.unit.beverage.Americano;
 import com.example.cafekiosk.unit.beverage.Latte;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class CafeKioskTest {
@@ -64,15 +65,18 @@ class CafeKioskTest {
     }
 
     @Test
+    @DisplayName("주문 목록에 담긴 상품들의 총 금액을 게산할 수 있다.")
     void calculateTotalPrice() {
+        // given
         CafeKiosk cafeKiosk = new CafeKiosk();
-        cafeKiosk.add(new Americano());
         cafeKiosk.add(new Americano());
         cafeKiosk.add(new Latte());
 
-        int expectedPrice = new Americano().getPrice() * 2 + new Latte().getPrice();
+        // when
+        int totalPrice = cafeKiosk.calculateTotalPrice();
 
-        assertThat(cafeKiosk.calculateTotalPrice()).isEqualTo(expectedPrice);
+        // then
+        assertThat(totalPrice).isEqualTo(new Americano().getPrice() + new Latte().getPrice());
     }
 
     @Test
