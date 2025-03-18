@@ -19,10 +19,8 @@ public class OrderCreateService {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
-    // TODO : User 정보 추가
     @Transactional
-    public OrderResult createOrder(List<String> productNumbers, String userId) {
-
+    public OrderResult createOrder(List<String> productNumbers) {
         productNumbers.forEach(productNumber -> {
             Optional<Product> optionalProduct = productRepository.findByProductNumber(productNumber);
             Product product = optionalProduct.orElseThrow(() ->
