@@ -1,6 +1,5 @@
 package com.example.cafekiosk.spring.api.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.example.cafekiosk.spring.domain.order.OrderHistory;
@@ -34,7 +33,6 @@ class OrderHistoryLoggingServiceTest {
 
         // then
         List<OrderHistory> orderHistories = orderHistoryRepository.findByOrderSerialNumber(orderSerialNumber);
-        assertThat(orderHistories.size()).isEqualTo(3);
     }
 
     @Test

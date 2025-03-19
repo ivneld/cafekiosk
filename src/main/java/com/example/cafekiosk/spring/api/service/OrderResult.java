@@ -1,10 +1,10 @@
 package com.example.cafekiosk.spring.api.service;
 
 import com.example.cafekiosk.spring.domain.order.Order;
+import com.example.cafekiosk.spring.domain.orderproduct.OrderProduct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,30 +12,30 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderResult {
 
-    private String orderHistoryId;
+    private String serialNumber;
     private int totalPrice;
     private LocalDateTime orderTime;
     private List<String> productNumbers;
 
-    @Builder
-    private OrderResult(String orderHistoryId, int totalPrice, LocalDateTime orderTime, List<String> productNumbers) {
-        this.orderHistoryId = orderHistoryId;
+    private OrderResult(
+        String serialNumber,
+        int totalPrice,
+        LocalDateTime orderTime,
+        List<OrderProduct> orderProducts) {
+        this.serialNumber = serialNumber;
         this.totalPrice = totalPrice;
         this.orderTime = orderTime;
-        this.productNumbers = productNumbers;
+        this.productNumbers = orderProducts.stream()
+                                           .map(orderProduct -> orderProduct.getProduct().getProductNumber())
+                                           .collect(Collectors.toList());
     }
 
     public static OrderResult of(Order order) {
-        return OrderResult.builder()
-                          .orderHistoryId(order.getSerialNumber())
-                          .totalPrice(order.getTotalPrice())
-                          .orderTime(order.getCreatedDateTime())
-                          .productNumbers(
-                              order.getOrderProducts()
-                                   .stream()
-                                   .map(orderProduct -> orderProduct.getProduct().getProductNumber())
-                                   .collect(Collectors.toList())
-                          )
-                          .build();
+        return new OrderResult(
+            order.getSerialNumber(),
+            order.getTotalPrice(),
+            order.getCreatedDateTime(),
+            order.getOrderProducts()
+        );
     }
 }

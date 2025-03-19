@@ -36,7 +36,12 @@ class ProductRepositoryTest {
         Product latte = createProduct("002", "Latte", ProductSellingStatus.HOLD);
         Product pineapple = createProduct("003", "Pineapple", ProductSellingStatus.STOP_SELLING);
 
-        productRepository.saveAll(List.of(americano, latte, pineapple));
+//        productRepository.saveAll(List.of(americano, latte, pineapple));
+
+        entityManager.persist(americano);
+        entityManager.persist(latte);
+        entityManager.persist(pineapple);
+        entityManager.flush();
 
         // when
         List<Product> findProducts = productRepository.findAllBySellingStatusIn(List.of(ProductSellingStatus.SELLING, ProductSellingStatus.HOLD));
