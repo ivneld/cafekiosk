@@ -32,18 +32,20 @@ public class Order extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String orderHistoryId;
+    private String serialNumber;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
+    @Column(nullable = false)
     private int totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
     private Order(List<Product> products) {
-        this.orderHistoryId = UUID.randomUUID().toString().substring(0, 8);
+        this.serialNumber = UUID.randomUUID().toString().substring(0, 8);
         this.orderStatus = OrderStatus.INIT;
         this.totalPrice = calculateTotalPrice(products);
         this.orderProducts = products.stream()

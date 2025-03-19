@@ -58,8 +58,9 @@ class OrderCreateServiceTest {
         productRepository.saveAll(List.of(product1, product2));
 
         // when, then
-        assertThatCode(() -> orderCreateService.createOrder(List.of("003")))
-            .isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThatCode(() -> orderCreateService.createOrder(List.of("003", "004")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Invalid product numbers: [003, 004]");
     }
 
     @Test
@@ -68,13 +69,16 @@ class OrderCreateServiceTest {
         // given
         Product product1 = createProduct("001", ProductSellingStatus.SELLING);
         Product product2 = createProduct("002", ProductSellingStatus.STOP_SELLING);
-        productRepository.saveAll(List.of(product1, product2));
+        Product product3 = createProduct("003", ProductSellingStatus.STOP_SELLING);
+        productRepository.saveAll(List.of(product1, product2, product3));
 
-        List<String> productNumbers = List.of(product1.getProductNumber(), product2.getProductNumber());
+        List<String> productNumbers =
+            List.of(product1.getProductNumber(), product2.getProductNumber(), product3.getProductNumber());
 
         // when, then
         assertThatCode(() -> orderCreateService.createOrder(productNumbers))
-            .isExactlyInstanceOf(IllegalStateException.class);
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Product status is STOP_SELLING. Product numbers: [002, 003]");
     }
 
     private Product createProduct(String productNumber, ProductSellingStatus status) {
@@ -86,5 +90,4 @@ class OrderCreateServiceTest {
                       .price(4000)
                       .build();
     }
-
 }

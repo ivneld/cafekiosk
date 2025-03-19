@@ -88,4 +88,22 @@ class ProductRepositoryTest {
                       .price(4000)
                       .build();
     }
+
+    @Test
+    @DisplayName("상품번호 리스트로 통해 상품을 조회한다.")
+    void findAllByProductNumberIn() {
+        // given
+        Product americano = createProduct("001", "Americano", ProductSellingStatus.SELLING);
+        Product latte = createProduct("002", "Latte", ProductSellingStatus.HOLD);
+        Product pineapple = createProduct("003", "Pineapple", ProductSellingStatus.STOP_SELLING);
+
+        productRepository.saveAll(List.of(americano, latte, pineapple));
+
+        // when
+        List<Product> products = productRepository.findAllByProductNumberIn(List.of("001", "002", "003", "004"));
+
+        // then
+        assertThat(products).hasSize(3);
+        assertThat(products).contains(americano, latte, pineapple);
+    }
 }

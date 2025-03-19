@@ -27,7 +27,7 @@ public class OrderResult {
 
     public static OrderResult of(Order order) {
         return OrderResult.builder()
-                          .orderHistoryId(order.getOrderHistoryId())
+                          .orderHistoryId(order.getSerialNumber())
                           .totalPrice(order.getTotalPrice())
                           .orderTime(order.getCreatedDateTime())
                           .productNumbers(
