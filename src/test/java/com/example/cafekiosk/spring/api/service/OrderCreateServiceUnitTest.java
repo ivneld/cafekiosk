@@ -25,7 +25,7 @@ class OrderCreateServiceUnitTest {
     private OrderCreateService orderCreateService;
 
     @Mock
-    private OrderHistoryLoggingService orderHistoryLoggingService;
+    private OrderHistoryCreateService orderHistoryCreateService;
     @Mock
     private ProductRepository productRepository;
     @Mock
@@ -40,7 +40,7 @@ class OrderCreateServiceUnitTest {
 
         // stub
         when(productRepository.findAllByProductNumberIn(productNumbers)).thenReturn(List.of(product1, product2));
-        when(orderHistoryLoggingService.register(any(), any())).thenReturn(OrderHistory.create(any(), productNumbers));
+        when(orderHistoryCreateService.create(any(), any())).thenReturn(OrderHistory.create(any(), productNumbers));
 
         // when
         OrderResult orderResult = orderCreateService.createOrder(productNumbers);

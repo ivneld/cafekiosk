@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-class OrderHistoryLoggingService {
+class OrderHistoryCreateService {
 
     private final OrderHistoryRepository orderHistoryRepository;
 
-    public OrderHistory register(String orderSerialNumber, List<String> productNumbers) {
+    public OrderHistory create(String orderSerialNumber, List<String> productNumbers) {
         if (orderHistoryRepository.existsByOrderSerialNumber(orderSerialNumber)) {
             throw new IllegalArgumentException("Order serial number " + orderSerialNumber + " already exists");
         }

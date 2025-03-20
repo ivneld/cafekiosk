@@ -17,8 +17,8 @@ public class ProductSearchController {
 
     @GetMapping("/api/v1/products/selling")
     public ResponseEntity<List<ProductDetailInfo>> getSellingProducts() {
-        List<ProductDetailInfo> products = productSearchService.getSellingProducts();
+        List<ProductDetailInfo> sellingProducts = productSearchService.getSellingProducts();
 
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(sellingProducts);
     }
 }

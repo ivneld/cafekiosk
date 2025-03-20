@@ -11,12 +11,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OrderCreateService {
 
-    private final OrderHistoryLoggingService historyLoggingService;
+    private final OrderHistoryCreateService historyLoggingService;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
@@ -25,7 +27,7 @@ public class OrderCreateService {
 
         Order order = Order.create(products);
 
-        OrderHistory orderHistory = historyLoggingService.register(order.getSerialNumber(), productNumbers);
+        OrderHistory orderHistory = historyLoggingService.create(order.getSerialNumber(), productNumbers);
 
         List<String> missingProductNumbers = getMissingProductNumbers(products, productNumbers);
         if (!missingProductNumbers.isEmpty()) {
@@ -38,7 +40,6 @@ public class OrderCreateService {
         }
 
         orderRepository.save(order);
-        // NOTE : 문제 발생
         orderHistory.onOrderSuccess();
 
         return OrderResult.of(order);

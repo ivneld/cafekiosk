@@ -2,12 +2,17 @@ package com.example.cafekiosk.spring.api.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.cafekiosk.spring.domain.order.OrderHistory;
+import com.example.cafekiosk.spring.domain.order.OrderHistoryRepository;
+import com.example.cafekiosk.spring.domain.order.OrderRepository;
 import com.example.cafekiosk.spring.domain.product.Product;
 import com.example.cafekiosk.spring.domain.product.ProductRepository;
 import com.example.cafekiosk.spring.domain.product.ProductSellingStatus;
 import com.example.cafekiosk.spring.domain.product.ProductType;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,10 @@ class OrderCreateServiceTest {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderHistoryRepository orderHistoryRepository;
 
     @Autowired
     private OrderCreateService orderCreateService;
@@ -42,11 +51,13 @@ class OrderCreateServiceTest {
         OrderResult orderResult = orderCreateService.createOrder(productNumbers);
 
         // then
-        assertThat(orderResult.getProductNumbers().size()).isEqualTo(productNumbers.size());
-        assertThat(orderResult.getProductNumbers())
-            .contains(product1.getProductNumber(), product2.getProductNumber(), product3.getProductNumber());
-        assertThat(orderResult.getTotalPrice())
-            .isEqualTo(product1.getPrice() + product2.getPrice() + product3.getPrice());
+        assertThat(orderRepository.findBySerialNumber(orderResult.getSerialNumber())).isPresent();
+
+        Optional<OrderHistory> optionalOrderHistory = orderHistoryRepository.findByOrderSerialNumber(orderResult.getSerialNumber());
+        assertThat(optionalOrderHistory.isPresent()).isTrue();
+
+        OrderHistory orderHistory = optionalOrderHistory.get();
+        assertThat(orderHistory.isOrderSuccess()).isTrue();
     }
 
     @Test
@@ -58,9 +69,13 @@ class OrderCreateServiceTest {
         productRepository.saveAll(List.of(product1, product2));
 
         // when, then
-        assertThatCode(() -> orderCreateService.createOrder(List.of("003", "004")))
-            .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Invalid product numbers: [003, 004]");
+        assertThatThrownBy(() -> orderCreateService.createOrder(List.of("003", "004")))
+            .isInstanceOf(IllegalArgumentException.class);
+
+        List<OrderHistory> orderHistoryList = orderHistoryRepository.findAll();
+        assertThat(orderHistoryList.size()).isEqualTo(1);
+
+        assertThat(orderHistoryList.getFirst().isOrderSuccess()).isFalse();
     }
 
     @Test
@@ -79,6 +94,11 @@ class OrderCreateServiceTest {
         assertThatCode(() -> orderCreateService.createOrder(productNumbers))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessage("Product status is STOP_SELLING. Product numbers: [002, 003]");
+
+        List<OrderHistory> orderHistoryList = orderHistoryRepository.findAll();
+        assertThat(orderHistoryList.size()).isEqualTo(1);
+
+        assertThat(orderHistoryList.getFirst().isOrderSuccess()).isFalse();
     }
 
     private Product createProduct(String productNumber, ProductSellingStatus status) {

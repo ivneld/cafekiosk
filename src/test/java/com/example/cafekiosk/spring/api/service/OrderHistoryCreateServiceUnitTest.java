@@ -16,16 +16,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class OrderHistoryLoggingServiceUnitTest {
+class OrderHistoryCreateServiceUnitTest {
 
     @InjectMocks
-    private OrderHistoryLoggingService orderHistoryLoggingService;
+    private OrderHistoryCreateService orderHistoryCreateService;
     @Mock
     private OrderHistoryRepository orderHistoryRepository;
 
     @Test
     @DisplayName("주문 고유 번호와 상품 번호 리스트로 주문 이력을 저장한다.")
-    void register() {
+    void create() {
         // given
         String orderSerialNumber = UUID.randomUUID().toString().substring(0, 8);
         List<String> productNumbers = List.of("001", "002", "003");
@@ -34,7 +34,7 @@ class OrderHistoryLoggingServiceUnitTest {
         when(orderHistoryRepository.existsByOrderSerialNumber(orderSerialNumber)).thenReturn(false);
 
         // when
-        OrderHistory orderHistory = orderHistoryLoggingService.register(orderSerialNumber, productNumbers);
+        OrderHistory orderHistory = orderHistoryCreateService.create(orderSerialNumber, productNumbers);
 
         // then
         assertThat(orderHistory.getOrderSerialNumber()).isEqualTo(orderSerialNumber);
@@ -43,7 +43,7 @@ class OrderHistoryLoggingServiceUnitTest {
 
     @Test
     @DisplayName("중복 주문 고유 번호로 이력 저장이 불가능하다.")
-    void registerWithDuplicatedOrderSerialNumber() {
+    void createWithDuplicatedOrderSerialNumber() {
         // given
         String orderSerialNumber = UUID.randomUUID().toString().substring(0, 8);
         List<String> productNumbers = List.of("001", "002", "003");
@@ -52,7 +52,7 @@ class OrderHistoryLoggingServiceUnitTest {
         when(orderHistoryRepository.existsByOrderSerialNumber(orderSerialNumber)).thenReturn(true);
 
         // when, then
-        assertThatCode(() -> orderHistoryLoggingService.register(orderSerialNumber, productNumbers))
+        assertThatCode(() -> orderHistoryCreateService.create(orderSerialNumber, productNumbers))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessage("Order serial number " + orderSerialNumber + " already exists");
     }
