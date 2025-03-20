@@ -53,8 +53,21 @@ public class Order extends BaseEntity {
                                      .collect(Collectors.toList());
     }
 
+    private Order(List<Product> products, String serialNumber) {
+        this.serialNumber = serialNumber;
+        this.orderStatus = OrderStatus.INIT;
+        this.totalPrice = calculateTotalPrice(products);
+        this.orderProducts = products.stream()
+                                     .map(product -> new OrderProduct(this, product))
+                                     .collect(Collectors.toList());
+    }
+
     public static Order create(List<Product> products) {
         return new Order(products);
+    }
+
+    public static Order create(List<Product> products, String serialNumber) {
+        return new Order(products, serialNumber);
     }
 
     private int calculateTotalPrice(List<Product> products) {

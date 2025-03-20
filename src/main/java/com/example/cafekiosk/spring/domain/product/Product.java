@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,5 +49,25 @@ public class Product extends BaseEntity {
         this.sellingStatus = sellingStatus;
         this.name = name;
         this.price = price;
+    }
+
+    public Product(String productNumber, ProductType type, ProductSellingStatus sellingStatus, String name, int price) {
+        this.productNumber = productNumber;
+        this.type = type;
+        this.sellingStatus = sellingStatus;
+        this.name = name;
+        this.price = price;
+    }
+
+    private Product(ProductType type, String name, int price) {
+        this.productNumber = UUID.randomUUID().toString().substring(0, 8);
+        this.type = type;
+        this.sellingStatus = ProductSellingStatus.HOLD;
+        this.name = name;
+        this.price = price;
+    }
+
+    public static Product create(ProductType type, String name, int price) {
+        return new Product(type, name, price);
     }
 }
