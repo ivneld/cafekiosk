@@ -1,4 +1,4 @@
-package com.example.cafekiosk.spring.api.service;
+package com.example.cafekiosk.spring.api.service.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;

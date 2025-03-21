@@ -2,7 +2,7 @@ package com.example.cafekiosk.spring.api.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.cafekiosk.spring.api.service.OrderResult;
+import com.example.cafekiosk.spring.api.service.order.OrderResult;
 import com.example.cafekiosk.spring.domain.order.OrderHistoryRepository;
 import com.example.cafekiosk.spring.domain.order.OrderRepository;
 import com.example.cafekiosk.spring.domain.product.Product;

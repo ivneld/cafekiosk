@@ -3,7 +3,7 @@ package com.example.cafekiosk.spring.api.controller;
 import static org.mockito.Mockito.when;
 
 import com.example.cafekiosk.spring.api.ControllerTestSupport;
-import com.example.cafekiosk.spring.api.service.ProductDetailInfo;
+import com.example.cafekiosk.spring.api.service.product.ProductDetailInfo;
 import com.example.cafekiosk.spring.domain.product.Product;
 import com.example.cafekiosk.spring.domain.product.ProductSellingStatus;
 import com.example.cafekiosk.spring.domain.product.ProductType;

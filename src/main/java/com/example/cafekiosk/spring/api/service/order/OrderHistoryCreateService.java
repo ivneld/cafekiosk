@@ -1,4 +1,4 @@
-package com.example.cafekiosk.spring.api.service;
+package com.example.cafekiosk.spring.api.service.order;
 
 import com.example.cafekiosk.spring.domain.order.OrderHistory;
 import com.example.cafekiosk.spring.domain.order.OrderHistoryRepository;

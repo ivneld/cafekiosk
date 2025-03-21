@@ -1,4 +1,4 @@
-package com.example.cafekiosk.spring.api.service;
+package com.example.cafekiosk.spring.api.service.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,10 +24,10 @@ class ProductCreateServiceTest {
     void create() {
         // given
         ProductCreateRequest request = ProductCreateRequest.builder()
-                                                             .type(ProductType.HANDMAND)
-                                                             .name("Americano")
-                                                             .price(3500)
-                                                             .build();
+                                                           .type(ProductType.HANDMAND)
+                                                           .name("Americano")
+                                                           .price(3500)
+                                                           .build();
 
         // when
         ProductDetailInfo productDetailInfo = productCreateService.create(request);

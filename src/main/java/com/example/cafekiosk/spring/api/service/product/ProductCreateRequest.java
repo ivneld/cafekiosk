@@ -1,4 +1,4 @@
-package com.example.cafekiosk.spring.api.service;
+package com.example.cafekiosk.spring.api.service.product;
 
 import com.example.cafekiosk.spring.domain.product.ProductType;
 import jakarta.validation.constraints.NotNull;

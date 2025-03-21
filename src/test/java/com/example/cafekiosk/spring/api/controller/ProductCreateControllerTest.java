@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.cafekiosk.spring.api.ControllerTestSupport;
-import com.example.cafekiosk.spring.api.service.ProductCreateRequest;
+import com.example.cafekiosk.spring.api.service.product.ProductCreateRequest;
 import com.example.cafekiosk.spring.domain.product.ProductType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,7 @@
 package com.example.cafekiosk.spring.api.controller;
 
-import com.example.cafekiosk.spring.api.service.ProductDetailInfo;
-import com.example.cafekiosk.spring.api.service.ProductSearchService;
-import com.example.cafekiosk.spring.domain.product.Product;
+import com.example.cafekiosk.spring.api.service.product.ProductDetailInfo;
+import com.example.cafekiosk.spring.api.service.product.ProductSearchService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package com.example.cafekiosk.spring.api.controller;
 
-import com.example.cafekiosk.spring.api.service.OrderCreateService;
-import com.example.cafekiosk.spring.api.service.OrderResult;
+import com.example.cafekiosk.spring.api.service.order.OrderCreateService;
+import com.example.cafekiosk.spring.api.service.order.OrderResult;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,8 +1,8 @@
 package com.example.cafekiosk.spring.api.controller;
 
-import com.example.cafekiosk.spring.api.service.ProductCreateRequest;
-import com.example.cafekiosk.spring.api.service.ProductCreateService;
-import com.example.cafekiosk.spring.api.service.ProductDetailInfo;
+import com.example.cafekiosk.spring.api.service.product.ProductCreateRequest;
+import com.example.cafekiosk.spring.api.service.product.ProductCreateService;
+import com.example.cafekiosk.spring.api.service.product.ProductDetailInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

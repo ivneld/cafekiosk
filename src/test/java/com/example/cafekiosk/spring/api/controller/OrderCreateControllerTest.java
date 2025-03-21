@@ -4,7 +4,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.cafekiosk.spring.api.ControllerTestSupport;
-import com.example.cafekiosk.spring.api.service.OrderResult;
+import com.example.cafekiosk.spring.api.service.order.OrderResult;
 import com.example.cafekiosk.spring.domain.order.Order;
 import com.example.cafekiosk.spring.domain.product.Product;
 import com.example.cafekiosk.spring.domain.product.ProductSellingStatus;
