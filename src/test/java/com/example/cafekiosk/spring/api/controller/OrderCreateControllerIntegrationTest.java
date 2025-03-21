@@ -9,16 +9,19 @@ import com.example.cafekiosk.spring.domain.product.Product;
 import com.example.cafekiosk.spring.domain.product.ProductRepository;
 import com.example.cafekiosk.spring.domain.product.ProductType;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+@Slf4j
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OrderCreateControllerIntegrationTest {
@@ -33,11 +36,16 @@ class OrderCreateControllerIntegrationTest {
     @Autowired
     private OrderHistoryRepository orderHistoryRepository;
 
+    @LocalServerPort
+    private int port;
+
     @AfterEach
     void tearDown() {
         orderRepository.deleteAll();
         productRepository.deleteAll();
         orderHistoryRepository.deleteAll();
+
+        log.info("Port : {}", port);
     }
 
     @Test

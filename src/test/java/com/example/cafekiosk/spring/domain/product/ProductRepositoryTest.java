@@ -1,12 +1,8 @@
-package com.example.cafekiosk.spring.domain;
+package com.example.cafekiosk.spring.domain.product;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.example.cafekiosk.spring.domain.product.Product;
-import com.example.cafekiosk.spring.domain.product.ProductRepository;
-import com.example.cafekiosk.spring.domain.product.ProductSellingStatus;
-import com.example.cafekiosk.spring.domain.product.ProductType;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -14,12 +10,14 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 @ActiveProfiles("test")
-@DataJpaTest
+@Transactional
+@SpringBootTest
 class ProductRepositoryTest {
 
     @Autowired
@@ -36,12 +34,12 @@ class ProductRepositoryTest {
         Product latte = createProduct("002", "Latte", ProductSellingStatus.HOLD);
         Product pineapple = createProduct("003", "Pineapple", ProductSellingStatus.STOP_SELLING);
 
-//        productRepository.saveAll(List.of(americano, latte, pineapple));
+        productRepository.saveAll(List.of(americano, latte, pineapple));
 
-        entityManager.persist(americano);
-        entityManager.persist(latte);
-        entityManager.persist(pineapple);
-        entityManager.flush();
+//        entityManager.persist(americano);
+//        entityManager.persist(latte);
+//        entityManager.persist(pineapple);
+//        entityManager.flush();
 
         // when
         List<Product> findProducts = productRepository.findAllBySellingStatusIn(List.of(ProductSellingStatus.SELLING, ProductSellingStatus.HOLD));

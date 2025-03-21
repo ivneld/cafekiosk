@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -19,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderCreateService {
 
     private final OrderHistoryCreateService historyLoggingService;
+    private final OrderHistoryUpdateService historyLoggingUpdateService;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public OrderResult createOrder(List<String> productNumbers) {
         List<Product> products = productRepository.findAllByProductNumberIn(productNumbers);
 
@@ -40,7 +43,7 @@ public class OrderCreateService {
         }
 
         orderRepository.save(order);
-        orderHistory.onOrderSuccess();
+        historyLoggingUpdateService.orderSuccess(orderHistory);
 
         return OrderResult.of(order);
     }

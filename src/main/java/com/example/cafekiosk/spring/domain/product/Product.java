@@ -70,4 +70,15 @@ public class Product extends BaseEntity {
     public static Product create(ProductType type, String name, int price) {
         return new Product(type, name, price);
     }
+
+    public void startSelling() {
+        if (ProductSellingStatus.STOP_SELLING.equals(this.sellingStatus)) {
+            throw new IllegalStateException("해당 상품은 판매 중지된 상품입니다.");
+        }
+        this.sellingStatus = ProductSellingStatus.SELLING;
+    }
+
+    public void stopSelling() {
+        this.sellingStatus = ProductSellingStatus.STOP_SELLING;
+    }
 }

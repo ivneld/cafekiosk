@@ -23,6 +23,10 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set("testcontainersVersion", "1.17.4")
+}
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -30,9 +34,22 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql:42.6.0")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    testCompileOnly("org.projectlombok:lombok")
+    testAnnotationProcessor("org.projectlombok:lombok")
+
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
+    }
 }
 
 tasks.withType<Test> {

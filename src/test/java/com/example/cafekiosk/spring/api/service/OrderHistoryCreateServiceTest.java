@@ -4,14 +4,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import com.example.cafekiosk.spring.domain.order.OrderHistoryRepository;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Testcontainers
 @Transactional
 @SpringBootTest
 class OrderHistoryCreateServiceTest {
@@ -20,6 +29,17 @@ class OrderHistoryCreateServiceTest {
     private OrderHistoryCreateService service;
     @Autowired
     private OrderHistoryRepository orderHistoryRepository;
+
+    @Container
+    static PostgreSQLContainer postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+
+    @DynamicPropertySource
+    static void postgresProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
+    }
 
     @Test
     @DisplayName("주문 고유 번호와 상품 번호 리스트로 주문 이력을 저장한다.")

@@ -27,6 +27,8 @@ class OrderCreateServiceUnitTest {
     @Mock
     private OrderHistoryCreateService orderHistoryCreateService;
     @Mock
+    private OrderHistoryUpdateService orderHistoryUpdateService;
+    @Mock
     private ProductRepository productRepository;
     @Mock
     private OrderRepository orderRepository;
