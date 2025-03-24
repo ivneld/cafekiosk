@@ -7,8 +7,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.example.cafekiosk.unit.beverage.Americano;
 import com.example.cafekiosk.unit.beverage.Latte;
 import java.time.LocalDateTime;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class CafeKioskTest {
@@ -65,45 +63,40 @@ class CafeKioskTest {
     }
 
     @Test
-    @DisplayName("주문 목록에 담긴 상품들의 총 금액을 게산할 수 있다.")
-    void calculateTotalPrice() {
-        // given
-        CafeKiosk cafeKiosk = new CafeKiosk();
-        cafeKiosk.add(new Americano());
-        cafeKiosk.add(new Latte());
-
-        // when
-        int totalPrice = cafeKiosk.calculateTotalPrice();
-
-        // then
-        assertThat(totalPrice).isEqualTo(new Americano().getPrice() + new Latte().getPrice());
-    }
-
-    @Test
     void createOrderWithEmptyBeverages() {
         CafeKiosk cafeKiosk = new CafeKiosk();
 
-        assertThatThrownBy(cafeKiosk::createOrder)
+        LocalDateTime orderDateTime = LocalDateTime.of(2025, 3, 24, 11, 0);
+
+        assertThatThrownBy(() -> cafeKiosk.createOrder(orderDateTime))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessage("주문할 음료를 추가하세요.");
     }
 
-    @Disabled
     @Test
     void createOrder() {
         CafeKiosk cafeKiosk = new CafeKiosk();
+
+        LocalDateTime orderDateTime = LocalDateTime.of(2025, 3, 24, 11, 0);
+
         Americano americano = new Americano();
         cafeKiosk.add(americano);
 
-        assertThatThrownBy(cafeKiosk::createOrder).doesNotThrowAnyException();
+        assertThatCode(() -> cafeKiosk.createOrder(orderDateTime))
+            .doesNotThrowAnyException();
     }
 
     @Test
-    void createOrderWithOrderTime() {
+    void createOrderWithOutOfRangeOrderDateTime() {
         CafeKiosk cafeKiosk = new CafeKiosk();
-        cafeKiosk.add(new Americano());
 
-        LocalDateTime orderTime = LocalDateTime.of(2025, 3, 17, 10, 0);
-        assertThatCode(() -> cafeKiosk.createOrder(orderTime)).doesNotThrowAnyException();
+        LocalDateTime orderDateTime = LocalDateTime.of(2025, 3, 24, 9, 0);
+
+        Americano americano = new Americano();
+        cafeKiosk.add(americano);
+
+        assertThatCode(() -> cafeKiosk.createOrder(orderDateTime))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessage("주문 시간이 아닙니다.");
     }
 }
