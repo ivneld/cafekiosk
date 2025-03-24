@@ -1,8 +1,6 @@
 package com.example.cafekiosk.unit;
 
 import com.example.cafekiosk.unit.beverage.Beverage;
-import com.example.cafekiosk.unit.order.Order;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,25 +34,5 @@ public class CafeKiosk {
 
     public void clear() {
         beverages.clear();
-    }
-
-    public Order createOrder(LocalDateTime orderDateTime) {
-        LocalTime currentTime = orderDateTime.toLocalTime();
-
-        if (this.beverages.isEmpty()) {
-            throw new IllegalArgumentException("주문할 음료를 추가하세요.");
-        }
-
-        if (currentTime.isBefore(SHOP_OPEN_TIME) || currentTime.isAfter(SHOP_CLOSE_TIME)) {
-            throw new IllegalArgumentException("주문 시간이 아닙니다.");
-        }
-
-        return new Order(LocalDateTime.now(), beverages);
-    }
-
-    public int calculateTotalPrice() {
-        return beverages.stream()
-                        .mapToInt(Beverage::getPrice)
-                        .sum();
     }
 }
