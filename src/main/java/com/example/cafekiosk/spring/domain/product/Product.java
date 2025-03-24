@@ -1,6 +1,7 @@
 package com.example.cafekiosk.spring.domain.product;
 
 import com.example.cafekiosk.spring.domain.BaseEntity;
+import com.example.cafekiosk.spring.domain.SerialNumberUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -44,7 +45,7 @@ public class Product extends BaseEntity {
 
     public static Product create(ProductType productType, String name, int price) {
         return new Product(
-            UUID.randomUUID().toString().substring(0, 8),
+            SerialNumberUtils.generate(),
             productType,
             ProductSellingStatus.HOLD,
             name,
