@@ -5,15 +5,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.cafekiosk.spring.api.ControllerTestSupport;
 import com.example.cafekiosk.spring.api.service.product.ProductCreateRequest;
+import com.example.cafekiosk.spring.api.service.product.ProductCreateService;
 import com.example.cafekiosk.spring.domain.product.ProductType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-class ProductCreateControllerTest extends ControllerTestSupport {
+@WebMvcTest(controllers = ProductCreateController.class)
+class ProductCreateControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private ProductCreateService productCreateService;
 
     @Test
     @DisplayName("신규 상품을 등록한다.")
