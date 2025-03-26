@@ -12,6 +12,7 @@ import com.example.cafekiosk.spring.domain.product.ProductRepository;
 import com.example.cafekiosk.spring.domain.product.ProductSellingStatus;
 import com.example.cafekiosk.spring.domain.product.ProductType;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +35,7 @@ class OrderCreateServiceUnitTest {
     private OrderRepository orderRepository;
 
     @Test
+    @DisplayName("상품 리스트로 주문 정보가 생성된다.")
     void createOrder() {
         // given
         Product product1 = createProduct("001", ProductSellingStatus.SELLING);
@@ -42,7 +44,7 @@ class OrderCreateServiceUnitTest {
 
         // stub
         when(productRepository.findAllByProductNumberIn(productNumbers)).thenReturn(List.of(product1, product2));
-        when(orderHistoryCreateService.create(any(), any())).thenReturn(OrderHistory.create(any(), productNumbers));
+        when(orderHistoryCreateService.register(any(), any())).thenReturn(OrderHistory.create(any(), productNumbers));
 
         // when
         OrderResult orderResult = orderCreateService.createOrder(productNumbers);
@@ -53,6 +55,7 @@ class OrderCreateServiceUnitTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 상품으로 주문을 했을때 주문 생성에 실패한다.")
     void createOrder_productNotFound() {
         // given
         Product product1 = createProduct("001", ProductSellingStatus.SELLING);
@@ -67,10 +70,11 @@ class OrderCreateServiceUnitTest {
         // when, then
         assertThatCode(() -> orderCreateService.createOrder(productNumbers))
             .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Invalid product numbers: " + List.of(product3.getProductNumber()));
+            .hasMessage("Nonexistent product numbers: " + List.of(product3.getProductNumber()));
     }
 
     @Test
+    @DisplayName("판매가 중지된 상품으로 주문을 했을때 주문 생성에 실패한다.")
     void createOrder_stoppedSellingProductNumbers() {
         // given
         Product product1 = createProduct("001", ProductSellingStatus.SELLING);
@@ -85,16 +89,10 @@ class OrderCreateServiceUnitTest {
         // when, then
         assertThatCode(() -> orderCreateService.createOrder(productNumbers))
             .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Product status is STOP_SELLING. Product numbers: " + List.of(product2.getProductNumber(), product3.getProductNumber()));
+            .hasMessage("Stopped selling product numbers: " + List.of(product2.getProductNumber(), product3.getProductNumber()));
     }
 
     private Product createProduct(String productNumber, ProductSellingStatus status) {
-        return Product.builder()
-                      .productNumber(productNumber)
-                      .type(ProductType.HANDMAND)
-                      .name("TEST_NAME")
-                      .sellingStatus(status)
-                      .price(4000)
-                      .build();
+        return new Product(productNumber, ProductType.HANDMADE, status, "TEST_NAME", 4000);
     }
 }

@@ -5,10 +5,7 @@ import com.example.cafekiosk.spring.domain.order.OrderHistory;
 import com.example.cafekiosk.spring.domain.order.OrderRepository;
 import com.example.cafekiosk.spring.domain.product.Product;
 import com.example.cafekiosk.spring.domain.product.ProductRepository;
-import com.example.cafekiosk.spring.domain.product.ProductSellingStatus;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderCreateService {
 
-    private final OrderHistoryCreateService historyLoggingService;
-    private final OrderHistoryUpdateService historyLoggingUpdateService;
+    private final OrderHistoryCreateService orderHistoryCreateService;
+    private final OrderHistoryUpdateService orderHistoryUpdateService;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
@@ -28,42 +25,19 @@ public class OrderCreateService {
     public OrderResult createOrder(List<String> productNumbers) {
         List<Product> products = productRepository.findAllByProductNumberIn(productNumbers);
 
-        Order order = Order.create(products);
+        var order = Order.create(products);
 
-        OrderHistory orderHistory = historyLoggingService.create(order.getSerialNumber(), productNumbers);
+        OrderHistory orderHistory = orderHistoryCreateService.register(order.getSerialNumber(), productNumbers);
 
-        List<String> missingProductNumbers = getMissingProductNumbers(products, productNumbers);
-        if (!missingProductNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Invalid product numbers: " + missingProductNumbers);
-        }
-
-        List<String> stoppedSellingProductNumbers = getStoppedSellingProductNumbers(products);
-        if (!stoppedSellingProductNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Product status is STOP_SELLING. Product numbers: " + stoppedSellingProductNumbers);
-        }
+        ProductCollectionValidator validator = new ProductCollectionValidator(products);
+        // 존재하지 않는 상품 번호 검증
+        validator.validateExistence(productNumbers);
+        // 판매 중지된 상품 번호 검증
+        validator.validateStoppedSelling();
 
         orderRepository.save(order);
-        historyLoggingUpdateService.orderSuccess(orderHistory);
+        orderHistoryUpdateService.orderSuccess(orderHistory);
 
         return OrderResult.of(order);
-    }
-
-    private List<String> getStoppedSellingProductNumbers(List<Product> products) {
-        Map<String, ProductSellingStatus> statusMap = products.stream()
-                                                              .collect(Collectors.toMap(
-                                                                  Product::getProductNumber,
-                                                                  Product::getSellingStatus
-                                                              ));
-        return statusMap.entrySet().stream()
-                        .filter(entry -> ProductSellingStatus.STOP_SELLING.equals(entry.getValue()))
-                        .map(Map.Entry::getKey)
-                        .toList();
-    }
-
-    private List<String> getMissingProductNumbers(List<Product> products, List<String> expectedProductNumbers) {
-        List<String> findProductNumbers = products.stream().map(Product::getProductNumber).toList();
-        return expectedProductNumbers.stream()
-                                     .filter(productNumber -> !findProductNumbers.contains(productNumber))
-                                     .toList();
     }
 }

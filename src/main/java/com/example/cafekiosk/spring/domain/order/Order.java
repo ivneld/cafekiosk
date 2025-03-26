@@ -1,6 +1,6 @@
 package com.example.cafekiosk.spring.domain.order;
 
-import com.example.cafekiosk.spring.domain.BaseEntity;
+import com.example.cafekiosk.spring.domain.SerialNumberUtils;
 import com.example.cafekiosk.spring.domain.orderproduct.OrderProduct;
 import com.example.cafekiosk.spring.domain.product.Product;
 import jakarta.persistence.CascadeType;
@@ -15,7 +15,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order extends BaseEntity {
+public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,17 +43,15 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
-    private Order(List<Product> products) {
-        this.serialNumber = UUID.randomUUID().toString().substring(0, 8);
-        this.orderStatus = OrderStatus.INIT;
-        this.totalPrice = calculateTotalPrice(products);
-        this.orderProducts = products.stream()
-                                     .map(product -> new OrderProduct(this, product))
-                                     .collect(Collectors.toList());
+    public Order(String serialNumber, OrderStatus orderStatus, int totalPrice, List<OrderProduct> orderProducts) {
+        this.serialNumber = serialNumber;
+        this.orderStatus = orderStatus;
+        this.totalPrice = totalPrice;
+        this.orderProducts = orderProducts;
     }
 
-    private Order(List<Product> products, String serialNumber) {
-        this.serialNumber = serialNumber;
+    private Order(List<Product> products) {
+        this.serialNumber = SerialNumberUtils.generate();
         this.orderStatus = OrderStatus.INIT;
         this.totalPrice = calculateTotalPrice(products);
         this.orderProducts = products.stream()
@@ -64,10 +61,6 @@ public class Order extends BaseEntity {
 
     public static Order create(List<Product> products) {
         return new Order(products);
-    }
-
-    public static Order create(List<Product> products, String serialNumber) {
-        return new Order(products, serialNumber);
     }
 
     private int calculateTotalPrice(List<Product> products) {

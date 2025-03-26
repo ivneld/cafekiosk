@@ -1,6 +1,7 @@
 package com.example.cafekiosk.spring.domain.product;
 
 import com.example.cafekiosk.spring.domain.BaseEntity;
+import com.example.cafekiosk.spring.domain.SerialNumberUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.util.UUID;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,22 +35,6 @@ public class Product extends BaseEntity {
     private String name;
     private int price;
 
-    @Builder
-    private Product(
-        Long id,
-        String productNumber,
-        ProductType type,
-        ProductSellingStatus sellingStatus,
-        String name,
-        int price) {
-        this.id = id;
-        this.productNumber = productNumber;
-        this.type = type;
-        this.sellingStatus = sellingStatus;
-        this.name = name;
-        this.price = price;
-    }
-
     public Product(String productNumber, ProductType type, ProductSellingStatus sellingStatus, String name, int price) {
         this.productNumber = productNumber;
         this.type = type;
@@ -59,26 +43,38 @@ public class Product extends BaseEntity {
         this.price = price;
     }
 
-    private Product(ProductType type, String name, int price) {
-        this.productNumber = UUID.randomUUID().toString().substring(0, 8);
-        this.type = type;
-        this.sellingStatus = ProductSellingStatus.HOLD;
-        this.name = name;
-        this.price = price;
+    public static Product create(ProductType productType, String name, int price) {
+        return new Product(
+            SerialNumberUtils.generate(),
+            productType,
+            ProductSellingStatus.HOLD,
+            name,
+            price
+        );
     }
 
-    public static Product create(ProductType type, String name, int price) {
-        return new Product(type, name, price);
+    public static Product create(String productNumber, ProductType productType, String name, int price) {
+        return new Product(
+            productNumber,
+            productType,
+            ProductSellingStatus.HOLD,
+            name,
+            price
+        );
     }
 
     public void startSelling() {
-        if (ProductSellingStatus.STOP_SELLING.equals(this.sellingStatus)) {
-            throw new IllegalStateException("해당 상품은 판매 중지된 상품입니다.");
+        if (this.sellingStatus == ProductSellingStatus.STOP_SELLING) {
+            throw new IllegalStateException("판매 중지된 상품은 판매 재개할 수 없습니다.");
         }
         this.sellingStatus = ProductSellingStatus.SELLING;
     }
 
     public void stopSelling() {
         this.sellingStatus = ProductSellingStatus.STOP_SELLING;
+    }
+
+    public void hold() {
+        this.sellingStatus = ProductSellingStatus.HOLD;
     }
 }

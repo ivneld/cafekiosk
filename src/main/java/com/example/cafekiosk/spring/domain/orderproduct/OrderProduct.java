@@ -1,8 +1,8 @@
 package com.example.cafekiosk.spring.domain.orderproduct;
 
 import com.example.cafekiosk.spring.domain.BaseEntity;
-import com.example.cafekiosk.spring.domain.product.Product;
 import com.example.cafekiosk.spring.domain.order.Order;
+import com.example.cafekiosk.spring.domain.product.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

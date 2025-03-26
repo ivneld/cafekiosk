@@ -3,10 +3,11 @@ package com.example.cafekiosk.spring.api.service.product;
 import com.example.cafekiosk.spring.domain.product.Product;
 import com.example.cafekiosk.spring.domain.product.ProductSellingStatus;
 import com.example.cafekiosk.spring.domain.product.ProductType;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class ProductDetailInfo {
 
     private String productNumber;
@@ -15,7 +16,6 @@ public class ProductDetailInfo {
     private String name;
     private int price;
 
-    @Builder
     private ProductDetailInfo(
         String productNumber,
         ProductType type,
@@ -30,12 +30,12 @@ public class ProductDetailInfo {
     }
 
     public static ProductDetailInfo of(Product product) {
-        return ProductDetailInfo.builder()
-                                .productNumber(product.getProductNumber())
-                                .type(product.getType())
-                                .sellingStatus(product.getSellingStatus())
-                                .name(product.getName())
-                                .price(product.getPrice())
-                                .build();
+        return new ProductDetailInfo(
+            product.getProductNumber(),
+            product.getType(),
+            product.getSellingStatus(),
+            product.getName(),
+            product.getPrice()
+        );
     }
 }

@@ -2,7 +2,6 @@ package com.example.cafekiosk.spring.api.service.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.example.cafekiosk.spring.domain.order.OrderHistory;
 import com.example.cafekiosk.spring.domain.order.OrderHistoryRepository;
@@ -18,11 +17,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
 @SpringBootTest
 class OrderCreateServiceTest {
+
+    @Autowired
+    private OrderCreateService orderCreateService;
 
     @Autowired
     private ProductRepository productRepository;
@@ -30,9 +30,6 @@ class OrderCreateServiceTest {
     private OrderRepository orderRepository;
     @Autowired
     private OrderHistoryRepository orderHistoryRepository;
-
-    @Autowired
-    private OrderCreateService orderCreateService;
 
     @AfterEach
     void tearDown() {
@@ -42,13 +39,13 @@ class OrderCreateServiceTest {
     }
 
     @Test
-    @DisplayName("상품번호 리스트를 받아 주문을 생성한다.")
-    void createOrder() {
+    @DisplayName("상품 번호 리스트로 주문을 생성한다.")
+    void createOrder() throws Exception {
         // given
         Product product1 = createProduct("001", ProductSellingStatus.SELLING);
         Product product2 = createProduct("002", ProductSellingStatus.HOLD);
         Product product3 = createProduct("003", ProductSellingStatus.SELLING);
-        productRepository.saveAll(List.of(product1, product2, product3));
+        productRepository.saveAllAndFlush(List.of(product1, product2, product3));
 
         List<String> productNumbers =
             List.of(product1.getProductNumber(), product2.getProductNumber(), product3.getProductNumber());
@@ -60,38 +57,38 @@ class OrderCreateServiceTest {
         assertThat(orderRepository.findBySerialNumber(orderResult.getSerialNumber())).isPresent();
 
         Optional<OrderHistory> optionalOrderHistory = orderHistoryRepository.findByOrderSerialNumber(orderResult.getSerialNumber());
-        assertThat(optionalOrderHistory.isPresent()).isTrue();
+        assertThat(optionalOrderHistory).isPresent();
 
         OrderHistory orderHistory = optionalOrderHistory.get();
         assertThat(orderHistory.isOrderSuccess()).isTrue();
     }
 
     @Test
-    @DisplayName("존재하지 않는 상품번호가 주문에 포함되어 있는 경우 실패한다.")
-    void createOrderWithInvalidProductNumber() {
+    @DisplayName("존재하지 않는 상품 번호가 주문에 포함되어 있는 경우 실패한다.")
+    void createOrderWithNonexistentProductNumber() throws Exception {
         // given
         Product product1 = createProduct("001", ProductSellingStatus.SELLING);
         Product product2 = createProduct("002", ProductSellingStatus.HOLD);
-        productRepository.saveAll(List.of(product1, product2));
+        productRepository.saveAllAndFlush(List.of(product1, product2));
 
         // when, then
-        assertThatThrownBy(() -> orderCreateService.createOrder(List.of("003", "004")))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatCode(() -> orderCreateService.createOrder(List.of("001", "003", "004")))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Nonexistent product numbers: [003, 004]");
 
         List<OrderHistory> orderHistoryList = orderHistoryRepository.findAll();
         assertThat(orderHistoryList.size()).isEqualTo(1);
-
         assertThat(orderHistoryList.getFirst().isOrderSuccess()).isFalse();
     }
 
     @Test
-    @DisplayName("판매하지 않고 있는 상품번호가 주문에 포함되어 있는 경우 실패한다.")
-    void createOrderWithStopSellingProductNumber() {
+    @DisplayName("판매 중지된 상품 번호가 주문에 포함되어 있는 경우 실패한다.")
+    void createOrderWithStoppedSellingProductNumber() throws Exception {
         // given
         Product product1 = createProduct("001", ProductSellingStatus.SELLING);
         Product product2 = createProduct("002", ProductSellingStatus.STOP_SELLING);
         Product product3 = createProduct("003", ProductSellingStatus.STOP_SELLING);
-        productRepository.saveAll(List.of(product1, product2, product3));
+        productRepository.saveAllAndFlush(List.of(product1, product2, product3));
 
         List<String> productNumbers =
             List.of(product1.getProductNumber(), product2.getProductNumber(), product3.getProductNumber());
@@ -99,21 +96,14 @@ class OrderCreateServiceTest {
         // when, then
         assertThatCode(() -> orderCreateService.createOrder(productNumbers))
             .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Product status is STOP_SELLING. Product numbers: [002, 003]");
+            .hasMessage("Stopped selling product numbers: [002, 003]");
 
         List<OrderHistory> orderHistoryList = orderHistoryRepository.findAll();
         assertThat(orderHistoryList.size()).isEqualTo(1);
-
         assertThat(orderHistoryList.getFirst().isOrderSuccess()).isFalse();
     }
 
     private Product createProduct(String productNumber, ProductSellingStatus status) {
-        return Product.builder()
-                      .productNumber(productNumber)
-                      .type(ProductType.HANDMAND)
-                      .name("TEST_NAME")
-                      .sellingStatus(status)
-                      .price(4000)
-                      .build();
+        return new Product(productNumber, ProductType.HANDMADE, status, "TEST_NAME", 4000);
     }
 }

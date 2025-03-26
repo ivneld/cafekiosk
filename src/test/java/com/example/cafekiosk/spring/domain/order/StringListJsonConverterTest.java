@@ -15,7 +15,7 @@ class StringListJsonConverterTest {
         List<String> list = List.of("001", "002", "003");
 
         // when
-        String json = StringListJsonConverter.listToJson(list);
+        String json = StringListJsonConverter.toJson(list);
 
         // then
         assertThat("[\"001\",\"002\",\"003\"]").isEqualTo(json);
@@ -28,7 +28,7 @@ class StringListJsonConverterTest {
         String json = "[\"001\",\"002\",\"003\"]";
 
         // when
-        List<String> list = StringListJsonConverter.jsonToList(json);
+        List<String> list = StringListJsonConverter.toList(json);
 
         // then
         assertThat(list).containsExactly("001", "002", "003");

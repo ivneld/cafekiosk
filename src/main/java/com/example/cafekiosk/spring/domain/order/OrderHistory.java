@@ -1,6 +1,8 @@
 package com.example.cafekiosk.spring.domain.order;
 
 import com.example.cafekiosk.spring.domain.BaseEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,9 +29,15 @@ public class OrderHistory extends BaseEntity {
     @Column(nullable = false)
     private boolean isOrderSuccess;
 
+    public OrderHistory(String orderSerialNumber, String productNumbers, boolean isOrderSuccess) {
+        this.orderSerialNumber = orderSerialNumber;
+        this.productNumbers = productNumbers;
+        this.isOrderSuccess = isOrderSuccess;
+    }
+
     private OrderHistory(String orderSerialNumber, List<String> productNumbers) {
         this.orderSerialNumber = orderSerialNumber;
-        this.productNumbers = StringListJsonConverter.listToJson(productNumbers);
+        this.productNumbers = StringListJsonConverter.toJson(productNumbers);
         this.isOrderSuccess = false;
     }
 
@@ -39,9 +47,5 @@ public class OrderHistory extends BaseEntity {
 
     public void onOrderSuccess() {
         this.isOrderSuccess = true;
-    }
-
-    public List<String> getProductNumberList() {
-        return StringListJsonConverter.jsonToList(this.productNumbers);
     }
 }

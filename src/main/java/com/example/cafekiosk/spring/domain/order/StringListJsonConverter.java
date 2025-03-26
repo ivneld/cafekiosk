@@ -9,7 +9,7 @@ class StringListJsonConverter {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static String listToJson(List<String> list) {
+    public static String toJson(List<String> list) {
         try {
             return objectMapper.writeValueAsString(list);
         } catch (JsonProcessingException e) {
@@ -17,10 +17,9 @@ class StringListJsonConverter {
         }
     }
 
-    public static List<String> jsonToList(String jsonString) {
+    public static List<String> toList(String jsonString) {
         try {
-            return objectMapper.readValue(jsonString, new TypeReference<>() {
-            });
+            return objectMapper.readValue(jsonString, new TypeReference<>() {});
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
         }

@@ -1,11 +1,12 @@
 package com.example.cafekiosk.spring.domain.order;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 class OrderHistoryTest {
 
@@ -29,12 +30,28 @@ class OrderHistoryTest {
         // given
         String orderSerialNumber = UUID.randomUUID().toString().substring(0, 8);
         List<String> productNumbers = List.of("001", "002", "003");
-        String jsonProductNumbers = StringListJsonConverter.listToJson(productNumbers);
+        String jsonProductNumbers = new ObjectMapper().writeValueAsString(productNumbers);
 
         // when
         OrderHistory orderHistory = OrderHistory.create(orderSerialNumber, productNumbers);
 
         // then
         assertThat(orderHistory.getProductNumbers()).isEqualTo(jsonProductNumbers);
+    }
+
+    @Test
+    @DisplayName("주문 성공 시 주문 이력에 성공 여부를 변경한다.")
+    void onOrderSuccess() {
+        // given
+        String orderSerialNumber = UUID.randomUUID().toString().substring(0, 8);
+        List<String> productNumbers = List.of("001", "002", "003");
+
+        OrderHistory orderHistory = OrderHistory.create(orderSerialNumber, productNumbers);
+
+        // when
+        orderHistory.onOrderSuccess();
+
+        // then
+        assertThat(orderHistory.isOrderSuccess()).isTrue();
     }
 }

@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum OrderStatus {
-
     INIT,
     CANCELED,
     PAYMENT_COMPLETED,

@@ -2,69 +2,57 @@ package com.example.cafekiosk.spring.api.service.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.Mockito.when;
 
+import com.example.cafekiosk.spring.domain.order.OrderHistory;
 import com.example.cafekiosk.spring.domain.order.OrderHistoryRepository;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@Testcontainers
-@Transactional
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class OrderHistoryCreateServiceTest {
 
-    @Autowired
-    private OrderHistoryCreateService service;
-    @Autowired
+    @InjectMocks
+    private OrderHistoryCreateService orderHistoryCreateService;
+    @Mock
     private OrderHistoryRepository orderHistoryRepository;
-
-    @Container
-    static PostgreSQLContainer postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-
-    @DynamicPropertySource
-    static void postgresProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.datasource.driver-class-name", postgres::getDriverClassName);
-    }
 
     @Test
     @DisplayName("주문 고유 번호와 상품 번호 리스트로 주문 이력을 저장한다.")
-    void create() throws Exception {
+    void register() throws Exception {
         // given
-        List<String> productNumbers = List.of("001", "002", "003");
         String orderSerialNumber = UUID.randomUUID().toString().substring(0, 8);
+        List<String> productNumbers = List.of("001", "002", "003");
+
+        // stub
+        when(orderHistoryRepository.existsByOrderSerialNumber(orderSerialNumber)).thenReturn(false);
 
         // when
-        service.create(orderSerialNumber, productNumbers);
+        OrderHistory orderHistory = orderHistoryCreateService.register(orderSerialNumber, productNumbers);
 
         // then
-        assertThat(orderHistoryRepository.findByOrderSerialNumber(orderSerialNumber)).isPresent();
+        assertThat(orderHistory.getOrderSerialNumber()).isEqualTo(orderSerialNumber);
+        assertThat(orderHistory.isOrderSuccess()).isFalse();
     }
 
     @Test
-    @DisplayName("중복된 주문 번호에 대한 이력 저장 요청은 존재할 수 없다.")
-    void createWithDuplicatedOrderSerialNumber() throws Exception {
+    @DisplayName("중복 주문 번호로 주문 이력을 저장할 수 없다.")
+    void registerWithDuplicatedOrderSerialNumber() throws Exception {
         // given
-        List<String> firstProductNumbers = List.of("001", "002");
-        List<String> secondProductNumbers = List.of("003", "004");
-
         String orderSerialNumber = UUID.randomUUID().toString().substring(0, 8);
+        List<String> productNumbers = List.of("001", "002", "003");
 
-        service.create(orderSerialNumber, firstProductNumbers);
+        // stub
+        when(orderHistoryRepository.existsByOrderSerialNumber(orderSerialNumber)).thenReturn(true);
 
         // when, then
-        assertThatCode(() -> service.create(orderSerialNumber, secondProductNumbers))
+        assertThatCode(() -> orderHistoryCreateService.register(orderSerialNumber, productNumbers))
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessage("Order serial number " + orderSerialNumber + " already exists");
     }

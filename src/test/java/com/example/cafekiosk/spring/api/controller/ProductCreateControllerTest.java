@@ -23,7 +23,6 @@ class ProductCreateControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -35,7 +34,7 @@ class ProductCreateControllerTest {
     void createProduct() throws Exception {
         // given
         var request = ProductCreateRequest.builder()
-                                          .type(ProductType.HANDMAND)
+                                          .type(ProductType.HANDMADE)
                                           .name("Americano")
                                           .price(4000)
                                           .build();
@@ -43,8 +42,8 @@ class ProductCreateControllerTest {
         // when, then
         mockMvc.perform(
                    post("/api/v1/product")
-                                         .content(objectMapper.writeValueAsString(request))
-                                         .contentType(MediaType.APPLICATION_JSON)
+                       .content(objectMapper.writeValueAsString(request))
+                       .contentType(MediaType.APPLICATION_JSON)
                )
                .andDo(print())
                .andExpect(status().isOk());
@@ -60,14 +59,13 @@ class ProductCreateControllerTest {
                                           .build();
 
         // when, then
-        MvcResult mvcResult = mockMvc.perform(
-                                         post("/api/v1/product")
-                                             .content(objectMapper.writeValueAsString(request))
-                                             .contentType(MediaType.APPLICATION_JSON)
-                                     )
-                                     .andDo(print())
-                                     .andExpect(status().isBadRequest())
-                                     .andExpect(content().string("상품 타입은 필수입니다."))
-                                     .andReturn();
+        mockMvc.perform(
+                   post("/api/v1/product")
+                       .content(objectMapper.writeValueAsString(request))
+                       .contentType(MediaType.APPLICATION_JSON)
+               )
+               .andDo(print())
+               .andExpect(status().isBadRequest())
+               .andExpect(content().string("상품 타입은 필수입니다."));
     }
 }
