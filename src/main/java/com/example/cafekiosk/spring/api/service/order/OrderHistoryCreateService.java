@@ -1,27 +1,15 @@
 package com.example.cafekiosk.spring.api.service.order;
 
 import com.example.cafekiosk.spring.domain.order.OrderHistory;
-import com.example.cafekiosk.spring.domain.order.OrderHistoryRepository;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional
-@RequiredArgsConstructor
 public class OrderHistoryCreateService {
 
-    private final OrderHistoryRepository orderHistoryRepository;
-
     public OrderHistory register(String orderSerialNumber, List<String> productNumbers) {
-        if (orderHistoryRepository.existsByOrderSerialNumber(orderSerialNumber)) {
-            throw new IllegalArgumentException("Order serial number " + orderSerialNumber + " already exists");
-        }
+        // TODO : orderSerialNumber 중복 조회
 
-        var orderHistory = OrderHistory.create(orderSerialNumber, productNumbers);
-        orderHistoryRepository.save(orderHistory);
+        // TODO : OrderHistory 생성 및 저장
 
-        return orderHistory;
+        return new OrderHistory(orderSerialNumber, "001", true);
     }
 }

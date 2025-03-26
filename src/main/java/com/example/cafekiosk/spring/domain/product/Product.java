@@ -1,7 +1,6 @@
 package com.example.cafekiosk.spring.domain.product;
 
 import com.example.cafekiosk.spring.domain.BaseEntity;
-import com.example.cafekiosk.spring.domain.SerialNumberUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,7 +8,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,40 +39,5 @@ public class Product extends BaseEntity {
         this.sellingStatus = sellingStatus;
         this.name = name;
         this.price = price;
-    }
-
-    public static Product create(ProductType productType, String name, int price) {
-        return new Product(
-            SerialNumberUtils.generate(),
-            productType,
-            ProductSellingStatus.HOLD,
-            name,
-            price
-        );
-    }
-
-    public static Product create(String productNumber, ProductType productType, String name, int price) {
-        return new Product(
-            productNumber,
-            productType,
-            ProductSellingStatus.HOLD,
-            name,
-            price
-        );
-    }
-
-    public void startSelling() {
-        if (this.sellingStatus == ProductSellingStatus.STOP_SELLING) {
-            throw new IllegalStateException("판매 중지된 상품은 판매 재개할 수 없습니다.");
-        }
-        this.sellingStatus = ProductSellingStatus.SELLING;
-    }
-
-    public void stopSelling() {
-        this.sellingStatus = ProductSellingStatus.STOP_SELLING;
-    }
-
-    public void hold() {
-        this.sellingStatus = ProductSellingStatus.HOLD;
     }
 }

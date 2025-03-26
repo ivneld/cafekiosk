@@ -42,7 +42,7 @@ class OrderCreateServiceUnitTest {
 
         // stub
         when(productRepository.findAllByProductNumberIn(productNumbers)).thenReturn(List.of(product1, product2));
-        when(orderHistoryCreateService.register(any(), any())).thenReturn(OrderHistory.create(any(), productNumbers));
+        when(orderHistoryCreateService.register(any(), any())).thenReturn(new OrderHistory(any(), any(), any()));
 
         // when
         OrderResult orderResult = orderCreateService.createOrder(productNumbers);
