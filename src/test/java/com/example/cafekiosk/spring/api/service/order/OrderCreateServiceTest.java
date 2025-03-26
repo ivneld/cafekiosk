@@ -12,12 +12,13 @@ import com.example.cafekiosk.spring.domain.product.ProductSellingStatus;
 import com.example.cafekiosk.spring.domain.product.ProductType;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @SpringBootTest
 class OrderCreateServiceTest {
 
@@ -30,13 +31,6 @@ class OrderCreateServiceTest {
     private OrderRepository orderRepository;
     @Autowired
     private OrderHistoryRepository orderHistoryRepository;
-
-    @AfterEach
-    void tearDown() {
-        orderRepository.deleteAll();
-        productRepository.deleteAll();
-        orderHistoryRepository.deleteAll();
-    }
 
     @Test
     @DisplayName("상품 번호 리스트로 주문을 생성한다.")

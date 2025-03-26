@@ -8,7 +8,6 @@ import com.example.cafekiosk.spring.domain.product.ProductRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -17,11 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderCreateService {
 
     private final OrderHistoryCreateService orderHistoryCreateService;
-    private final OrderHistoryUpdateService orderHistoryUpdateService;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public OrderResult createOrder(List<String> productNumbers) {
         List<Product> products = productRepository.findAllByProductNumberIn(productNumbers);
 
@@ -36,7 +33,7 @@ public class OrderCreateService {
         validator.validateStoppedSelling();
 
         orderRepository.save(order);
-        orderHistoryUpdateService.orderSuccess(orderHistory);
+        orderHistory.onOrderSuccess();
 
         return OrderResult.of(order);
     }
