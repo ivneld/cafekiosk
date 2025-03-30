@@ -1,6 +1,8 @@
 package com.example.cafekiosk.spring.domain.order;
 
+import com.example.cafekiosk.spring.domain.SerialNumberUtils;
 import com.example.cafekiosk.spring.domain.orderproduct.OrderProduct;
+import com.example.cafekiosk.spring.domain.product.Product;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,5 +47,24 @@ public class Order {
         this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
         this.orderProducts = orderProducts;
+    }
+
+    private Order(List<Product> products) {
+        this.serialNumber = SerialNumberUtils.generate();
+        this.orderStatus = OrderStatus.INIT;
+        this.totalPrice = calculateTotalPrice(products);
+        this.orderProducts = products.stream()
+                                     .map(product -> new OrderProduct(this, product))
+                                     .toList();
+    }
+
+    public static Order create(List<Product> products) {
+        return new Order(products);
+    }
+
+    private int calculateTotalPrice(List<Product> products) {
+        return products.stream()
+                       .mapToInt(Product::getPrice)
+                       .sum();
     }
 }
