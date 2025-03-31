@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.example.cafekiosk.spring.domain.SerialNumberUtils;
 import com.example.cafekiosk.spring.domain.order.OrderHistory;
 import com.example.cafekiosk.spring.domain.order.OrderRepository;
 import com.example.cafekiosk.spring.domain.product.Product;
@@ -42,14 +43,14 @@ class OrderCreateServiceUnitTest {
 
         // stub
         when(productRepository.findAllByProductNumberIn(productNumbers)).thenReturn(List.of(product1, product2));
-        when(orderHistoryCreateService.register(any(), any())).thenReturn(new OrderHistory(any(), any(), any()));
+        when(orderHistoryCreateService.register(any(), any())).thenReturn(new OrderHistory(SerialNumberUtils.generate(), "[001, 002]", false));
 
         // when
         OrderResult orderResult = orderCreateService.createOrder(productNumbers);
 
         // then
-        assertThat(orderResult.getTotalPrice()).isEqualTo(product1.getPrice() + product2.getPrice());
-        assertThat(orderResult.getProductNumbers()).isEqualTo(productNumbers);
+        assertThat(orderResult.totalPrice()).isEqualTo(product1.getPrice() + product2.getPrice());
+        assertThat(orderResult.productNumbers()).isEqualTo(productNumbers);
     }
 
     @Test
@@ -68,7 +69,7 @@ class OrderCreateServiceUnitTest {
         // when, then
         assertThatCode(() -> orderCreateService.createOrder(productNumbers))
             .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Invalid product numbers: " + List.of(product3.getProductNumber()));
+            .hasMessage("Nonexistent product numbers: " + List.of(product3.getProductNumber()));
     }
 
     @Test
@@ -87,7 +88,7 @@ class OrderCreateServiceUnitTest {
         // when, then
         assertThatCode(() -> orderCreateService.createOrder(productNumbers))
             .isExactlyInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Product status is STOP_SELLING. Product numbers: " + List.of(product2.getProductNumber(), product3.getProductNumber()));
+            .hasMessage("Stopped selling product numbers: " + List.of(product2.getProductNumber(), product3.getProductNumber()));
     }
 
     private Product createProduct(String productNumber, ProductSellingStatus status) {
