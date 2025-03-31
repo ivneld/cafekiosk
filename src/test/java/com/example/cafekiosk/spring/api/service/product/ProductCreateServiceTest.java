@@ -29,7 +29,7 @@ class ProductCreateServiceTest {
         ProductDetailInfo productDetailInfo = productCreateService.create(americano);
 
         // then
-        assertThat(productDetailInfo.getProductNumber()).isNotEmpty();
-        assertThat(productDetailInfo.getSellingStatus()).isEqualTo(ProductSellingStatus.HOLD);
+        assertThat(productDetailInfo.productNumber()).isNotEmpty();
+        assertThat(productDetailInfo.sellingStatus()).isEqualTo(ProductSellingStatus.HOLD);
     }
 }
